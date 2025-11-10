@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import {
   Users,
   BarChart3,
-  LogOut,
   Calendar,
   TrendingUp,
   FileText,
+  House,
 } from "lucide-react";
 import authService from "../service/authService";
 import FPTLogo from "../assets/LOGO.png";
+import { UserDropdown } from "../components/UserDropdown";
 
 export function AdminDashboard() {
   const navigate = useNavigate();
@@ -46,24 +47,19 @@ export function AdminDashboard() {
               </div>
               <span className="text-white text-2xl font-bold">FPT News</span>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <button
                 onClick={handleGoHome}
-                className="text-white hover:text-orange-100 px-4 py-2 rounded-lg transition"
-              >
-                View Homepage
-              </button>
-              <div className="text-white text-sm">
-                <div className="font-semibold">{userInfo.email}</div>
-                <div className="text-orange-100 text-xs">Administrator</div>
-              </div>
-              <button
-                onClick={handleLogout}
                 className="bg-white text-orange-600 px-4 py-2 rounded-lg font-semibold hover:bg-orange-50 transition flex items-center space-x-2"
               >
-                <LogOut className="h-5 w-5" />
-                <span>Logout</span>
+                <House className="h-5 w-5" />
+                <span>HomePage</span>
               </button>
+              <UserDropdown
+                userEmail={userInfo.email}
+                userRole={userInfo.role}
+                onLogout={handleLogout}
+              />
             </div>
           </div>
         </div>

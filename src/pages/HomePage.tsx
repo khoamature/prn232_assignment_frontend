@@ -10,7 +10,6 @@ import {
   ChevronRight,
   ChevronDown,
   LayoutDashboard,
-  LogOut,
 } from "lucide-react";
 import newsService, {
   NewsArticleItem,
@@ -19,6 +18,7 @@ import newsService, {
 } from "../service/newsService";
 import FPTLogo from "../assets/LOGO.png";
 import { ImageCarousel } from "../components/ImageCarousel";
+import { UserDropdown } from "../components/UserDropdown";
 import authService from "../service/authService";
 
 // Import carousel images
@@ -361,13 +361,11 @@ export function HomePage() {
                     <LayoutDashboard className="h-5 w-5" />
                     <span>Dashboard</span>
                   </button>
-                  <button
-                    onClick={() => authService.logout()}
-                    className="bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-800 transition flex items-center space-x-2"
-                  >
-                    <LogOut className="h-5 w-5" />
-                    <span>Logout</span>
-                  </button>
+                  <UserDropdown
+                    userEmail={authService.getUserInfo()?.email || ""}
+                    userRole={userRole || ""}
+                    onLogout={() => authService.logout()}
+                  />
                 </>
               ) : (
                 <button
