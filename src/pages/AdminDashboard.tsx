@@ -45,7 +45,7 @@ export function AdminDashboard() {
               <div className="bg-white rounded p-1">
                 <img src={FPTLogo} alt="FPT Logo" className="h-8 w-auto" />
               </div>
-              <span className="text-white text-2xl font-bold">FPT News</span>
+              <span className="text-white text-2xl font-bold">FU News</span>
             </div>
             <div className="flex items-center space-x-3">
               <button
