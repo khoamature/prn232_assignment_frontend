@@ -79,29 +79,30 @@ export interface CategoryResponse {
 }
 
 export interface NewsParams {
+  CreatedBy?: number;
+  UpdatedBy?: number;
+  NewsTitle?: string;
+  Headline?: string;
+  NewsSource?: string;
   CategoryId?: number;
-  NewsStatus?: string;
+  NewsStatus?: number;
+  CreatedDateFrom?: string;
+  CreatedDateTo?: string;
+  TagIds?: number[];
   PageNumber?: number;
   PageSize?: number;
   SortBy?: string;
-  SearchTerm?: string;
+  SortOrder?: string;
+  IsDescending?: boolean;
 }
 
 // News Service - Tất cả các API calls liên quan đến News
 class NewsService {
   // Lấy danh sách news articles với pagination
   async getNewsArticles(params: NewsParams = {}) {
-    const defaultParams: NewsParams = {
-      NewsStatus: "Active",
-      PageNumber: 1,
-      PageSize: 6,
-      SortBy: "CreatedDate",
-      ...params,
-    };
-
     const response = await axiosInstance.get<
       ApiResponse<PaginationData<NewsArticleItem>>
-    >("/NewsArticles", { params: defaultParams });
+    >("/NewsArticles", { params });
     return response.data;
   }
 
@@ -142,7 +143,7 @@ class NewsService {
   async searchNews(searchTerm: string, params: NewsParams = {}) {
     return this.getNewsArticles({
       ...params,
-      SearchTerm: searchTerm,
+      NewsTitle: searchTerm,
     });
   }
 

@@ -238,45 +238,15 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
         </div>
       </div>
 
-      {/* Results Info */}
-      <div className="px-6 py-3 bg-gray-50 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-600">
-            Showing{" "}
-            {categories.length > 0 ? (pageNumber - 1) * pageSize + 1 : 0} -{" "}
-            {Math.min(pageNumber * pageSize, totalCount)} of {totalCount}{" "}
-            categories
-          </p>
-          <div className="flex items-center space-x-2">
-            <label className="text-sm text-gray-600">Page size:</label>
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setPageNumber(1);
-              }}
-              className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
       {/* Table */}
       <div className="overflow-x-auto">
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-center">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
-              <p className="mt-4 text-gray-600">Loading categories...</p>
-            </div>
+          <div className="flex items-center justify-center p-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+            <span className="ml-3 text-gray-600">Loading categories...</span>
           </div>
         ) : categories.length === 0 ? (
-          <div className="text-center py-12">
+          <div className="text-center p-12">
             <p className="text-gray-500">No categories found</p>
           </div>
         ) : (
@@ -365,29 +335,51 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
       {!loading && categories.length > 0 && (
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
           <div className="flex items-center justify-between">
-            <button
-              onClick={() => handlePageChange(pageNumber - 1)}
-              disabled={!hasPreviousPage}
-              className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              <span>Previous</span>
-            </button>
-
             <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-700">Show</span>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setPageNumber(1);
+                }}
+                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
               <span className="text-sm text-gray-700">
-                Page {pageNumber} of {totalPages}
+                of {totalCount} entries
               </span>
             </div>
 
-            <button
-              onClick={() => handlePageChange(pageNumber + 1)}
-              disabled={!hasNextPage}
-              className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
-            >
-              <span>Next</span>
-              <ChevronRight className="h-4 w-4" />
-            </button>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => handlePageChange(pageNumber - 1)}
+                disabled={!hasPreviousPage}
+                className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                <span>Previous</span>
+              </button>
+
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-700">
+                  Page {pageNumber} of {totalPages}
+                </span>
+              </div>
+
+              <button
+                onClick={() => handlePageChange(pageNumber + 1)}
+                disabled={!hasNextPage}
+                className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                <span>Next</span>
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         </div>
       )}

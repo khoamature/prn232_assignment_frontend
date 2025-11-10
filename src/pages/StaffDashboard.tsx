@@ -5,6 +5,7 @@ import authService from "../service/authService";
 import FPTLogo from "../assets/LOGO.png";
 import { UserDropdown } from "../components/UserDropdown";
 import { CategoryManagement } from "../components/CategoryManagement";
+import { NewsManagement } from "../components/NewsManagement";
 
 type ActiveSection = "categories" | "articles" | "myArticles";
 
@@ -115,16 +116,7 @@ export function StaffDashboard() {
         {/* Content Sections */}
         {activeSection === "categories" && <CategoryManagement />}
 
-        {activeSection === "articles" && (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              News Articles Management
-            </h2>
-            <p className="text-gray-600">
-              This section will contain news articles management features.
-            </p>
-          </div>
-        )}
+        {activeSection === "articles" && <NewsManagement />}
 
         {activeSection === "myArticles" && (
           <div className="bg-white rounded-lg shadow-md p-6">
