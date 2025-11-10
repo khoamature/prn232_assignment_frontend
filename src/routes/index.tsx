@@ -3,6 +3,7 @@ import { HomePage } from "../pages/HomePage";
 import { LoginPage } from "../pages/LoginPage";
 import { AdminDashboard } from "../pages/AdminDashboard";
 import { StaffDashboard } from "../pages/StaffDashboard";
+import { AccountSettings } from "../pages/AccountSettings";
 
 // Định nghĩa các routes cho ứng dụng
 const routes: RouteObject[] = [
@@ -21,6 +22,10 @@ const routes: RouteObject[] = [
   {
     path: "/staff",
     element: <StaffDashboard />,
+  },
+  {
+    path: "/settings",
+    element: <AccountSettings />,
   },
 ];
 

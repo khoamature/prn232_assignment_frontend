@@ -12,7 +12,7 @@ const axiosInstance = axios.create({
 // Request interceptor - Thêm token vào mỗi request
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("auth_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -37,7 +37,7 @@ axiosInstance.interceptors.response.use(
           // Nếu đang ở trang login, để component xử lý lỗi
           const isLoginPage = window.location.pathname === "/login";
           if (!isLoginPage) {
-            localStorage.removeItem("token");
+            localStorage.removeItem("auth_token");
             localStorage.removeItem("user_info");
             window.location.href = "/login";
           }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { User, Settings, LogOut, ChevronDown } from "lucide-react";
 
 interface UserDropdownProps {
@@ -14,6 +15,7 @@ export function UserDropdown({
   onLogout,
   onSettings,
 }: UserDropdownProps) {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +41,7 @@ export function UserDropdown({
   };
 
   const getRoleDisplay = (role: string) => {
-    return role === "admin" ? "Administrator" : "Staff Member";
+    return role === "Admin" ? "Administrator" : "Staff Member";
   };
 
   return (
@@ -91,18 +93,16 @@ export function UserDropdown({
 
           {/* Menu Items */}
           <div className="py-1">
-            {onSettings && (
-              <button
-                onClick={() => {
-                  onSettings();
-                  setIsOpen(false);
-                }}
-                className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition"
-              >
-                <Settings className="h-4 w-4" />
-                <span>Account Settings</span>
-              </button>
-            )}
+            <button
+              onClick={() => {
+                navigate("/settings");
+                setIsOpen(false);
+              }}
+              className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition"
+            >
+              <Settings className="h-4 w-4" />
+              <span>Account Settings</span>
+            </button>
 
             <button
               onClick={() => {
