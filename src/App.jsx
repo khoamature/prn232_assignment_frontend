@@ -1,9 +1,25 @@
-import { useRoutes } from "react-router-dom";
+import { useRoutes, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { useState, useEffect } from "react";
 import routes from "./routes";
+import { PageLoader } from "./components/PageLoader";
 
 function App() {
   const element = useRoutes(routes);
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Show loading when route changes
+    setLoading(true);
+
+    // Minimum loading time for smooth UX
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   return (
     <>
@@ -33,6 +49,7 @@ function App() {
           },
         }}
       />
+      {loading && <PageLoader />}
       {element}
     </>
   );
