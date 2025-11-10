@@ -226,15 +226,40 @@ export function HomePage() {
                 <div className="bg-white rounded p-1">
                   <img src={FPTLogo} alt="FPT Logo" className="h-8 w-auto" />
                 </div>
-                <span className="text-white text-2xl font-bold">FPT News</span>
+                <span className="text-white text-2xl font-bold">FU News</span>
               </div>
-              <button
-                onClick={() => navigate("/login")}
-                className="bg-white text-orange-600 px-6 py-2 rounded-lg font-semibold hover:bg-orange-50 transition flex items-center space-x-2"
-              >
-                <LogIn className="h-5 w-5" />
-                <span>Login</span>
-              </button>
+              <div className="flex items-center space-x-3">
+                {isAuthenticated ? (
+                  <>
+                    <button
+                      onClick={() => {
+                        if (userRole?.toLowerCase() === "admin") {
+                          navigate("/admin");
+                        } else if (userRole?.toLowerCase() === "staff") {
+                          navigate("/staff");
+                        }
+                      }}
+                      className="bg-white text-orange-600 px-4 py-2 rounded-lg font-semibold hover:bg-orange-50 transition flex items-center space-x-2"
+                    >
+                      <LayoutDashboard className="h-5 w-5" />
+                      <span>Dashboard</span>
+                    </button>
+                    <UserDropdown
+                      userEmail={authService.getUserInfo()?.email || ""}
+                      userRole={userRole || ""}
+                      onLogout={() => authService.logout()}
+                    />
+                  </>
+                ) : (
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="bg-white text-orange-600 px-6 py-2 rounded-lg font-semibold hover:bg-orange-50 transition flex items-center space-x-2"
+                  >
+                    <LogIn className="h-5 w-5" />
+                    <span>Login</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </nav>
