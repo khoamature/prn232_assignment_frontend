@@ -123,6 +123,8 @@ export function HomePage() {
 
       const params: any = {
         NewsStatus: "Active",
+        SortBy: "CreatedDate",
+        SortOrder: "desc",
         PageNumber: pageNumber,
         PageSize: 6,
       };
@@ -527,7 +529,9 @@ export function HomePage() {
                   }`}
                 >
                   <MoreHorizontal className="h-4 w-4" />
-                  <span>More ({categoryTree.length - MAX_VISIBLE_CATEGORIES})</span>
+                  <span>
+                    More ({categoryTree.length - MAX_VISIBLE_CATEGORIES})
+                  </span>
                 </button>
 
                 {showMoreCategories && (
@@ -539,7 +543,9 @@ export function HomePage() {
                         <input
                           type="text"
                           value={categorySearchTerm}
-                          onChange={(e) => setCategorySearchTerm(e.target.value)}
+                          onChange={(e) =>
+                            setCategorySearchTerm(e.target.value)
+                          }
                           placeholder="Search categories..."
                           className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                           autoFocus
@@ -548,7 +554,9 @@ export function HomePage() {
                       {categorySearchTerm && (
                         <div className="text-xs text-gray-500 px-1">
                           Found {filteredMoreCategories.length}{" "}
-                          {filteredMoreCategories.length === 1 ? "category" : "categories"}
+                          {filteredMoreCategories.length === 1
+                            ? "category"
+                            : "categories"}
                         </div>
                       )}
                     </div>
