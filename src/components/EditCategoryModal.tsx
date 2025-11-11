@@ -337,7 +337,7 @@ export function EditCategoryModal({
                   {isDropdownOpen && <div className="h-72"></div>}
                 </div>
               )}
-              <p className="mt-5 text-sm text-gray-500">
+              <p className="text-sm text-gray-500">
                 Leave as "Root Category" to create a top-level category
               </p>
             </div>

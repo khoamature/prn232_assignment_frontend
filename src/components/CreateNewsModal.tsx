@@ -352,7 +352,7 @@ export function CreateNewsModal({
 
               {isCategoryDropdownOpen && (
                 <div className="absolute z-50 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg w-80">
-                  <div className="p-2 border-b border-gray-200">
+                  <div className="p-2 border-b border-gray-200 space-y-2">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                       <input
@@ -362,11 +362,17 @@ export function CreateNewsModal({
                         placeholder="Search categories..."
                         className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                         onClick={(e) => e.stopPropagation()}
+                        autoFocus
                       />
                     </div>
+                    {categorySearchTerm && (
+                      <div className="text-xs text-gray-500 px-1">
+                        Found {filteredCategories.length} {filteredCategories.length === 1 ? 'category' : 'categories'}
+                      </div>
+                    )}
                   </div>
 
-                  <div className="max-h-60 overflow-y-auto">
+                  <div className="max-h-80 overflow-y-auto">
                     {filteredCategories.length > 0 ? (
                       filteredCategories.map((category) => (
                         <button
@@ -385,8 +391,12 @@ export function CreateNewsModal({
                         </button>
                       ))
                     ) : (
-                      <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                        No categories found
+                      <div className="px-4 py-8 text-center">
+                        <div className="text-gray-400 mb-2">
+                          <Search className="h-8 w-8 mx-auto" />
+                        </div>
+                        <p className="text-sm text-gray-500 font-medium">No categories found</p>
+                        <p className="text-xs text-gray-400 mt-1">Try a different search term</p>
                       </div>
                     )}
                   </div>

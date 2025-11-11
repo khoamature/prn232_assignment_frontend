@@ -295,25 +295,25 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
             <p className="text-gray-500">No categories found</p>
           </div>
         ) : (
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
                   ID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">
                   Category Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Description
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
                   Parent Category
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                   Actions
                 </th>
               </tr>
@@ -325,14 +325,14 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
                   className="hover:bg-gray-50 transition"
                 >
                   <td
-                    className={`px-6 py-4 whitespace-nowrap text-sm text-gray-900 ${
+                    className={`px-4 py-3 whitespace-nowrap text-sm text-gray-900 font-medium ${
                       !category.isActive ? "opacity-50 blur-[0.5px]" : ""
                     }`}
                   >
                     {category.categoryId}
                   </td>
                   <td
-                    className={`px-6 py-4 whitespace-nowrap ${
+                    className={`px-4 py-3 whitespace-nowrap ${
                       !category.isActive ? "opacity-50 blur-[0.5px]" : ""
                     }`}
                   >
@@ -341,35 +341,35 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
                     </div>
                   </td>
                   <td
-                    className={`px-6 py-4 ${
+                    className={`px-4 py-3 ${
                       !category.isActive ? "opacity-50 blur-[0.5px]" : ""
                     }`}
                   >
-                    <div className="text-sm text-gray-600 max-w-xs truncate">
+                    <div className="text-sm text-gray-600 max-w-md truncate">
                       {category.categoryDescription}
                     </div>
                   </td>
                   <td
-                    className={`px-6 py-4 whitespace-nowrap ${
+                    className={`px-4 py-3 whitespace-nowrap ${
                       !category.isActive ? "opacity-50 blur-[0.5px]" : ""
                     }`}
                   >
                     {category.parent ? (
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-gray-600 truncate">
                         {category.parent.parentCategoryName}
                       </div>
                     ) : (
                       <span className="text-sm text-gray-400">Root</span>
                     )}
                   </td>
-                  <td className={`px-6 py-4 whitespace-nowrap`}>
+                  <td className={`px-4 py-3 whitespace-nowrap`}>
                     {getStatusBadge(category.isActive)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <div className="flex items-center space-x-2">
+                  <td className="px-4 py-3 whitespace-nowrap text-sm">
+                    <div className="flex items-center justify-center space-x-1">
                       <button
                         onClick={() => handleEditCategory(category.categoryId)}
-                        className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50 transition"
+                        className="text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-50 transition"
                         title="Edit category"
                       >
                         <Edit className="h-4 w-4" />
@@ -382,7 +382,7 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
                               category.categoryName
                             )
                           }
-                          className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50 transition"
+                          className="text-red-600 hover:text-red-800 p-1.5 rounded hover:bg-red-50 transition"
                           title="Delete category"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -395,7 +395,7 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
                               category.categoryName
                             )
                           }
-                          className="text-green-600 hover:text-green-800 p-1 rounded hover:bg-green-50 transition"
+                          className="text-green-600 hover:text-green-800 p-1.5 rounded hover:bg-green-50 transition"
                           title="Unlock and activate category"
                         >
                           <Unlock className="h-4 w-4" />

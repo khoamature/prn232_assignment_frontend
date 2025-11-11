@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
@@ -10,6 +10,8 @@ import {
   ChevronRight,
   ChevronDown,
   LayoutDashboard,
+  Search,
+  MoreHorizontal,
 } from "lucide-react";
 import newsService, {
   NewsArticleItem,
@@ -61,6 +63,11 @@ export function HomePage() {
   const [hasPreviousPage, setHasPreviousPage] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [showMoreCategories, setShowMoreCategories] = useState(false);
+  const [categorySearchTerm, setCategorySearchTerm] = useState("");
+  const moreCategoriesRef = useRef<HTMLDivElement>(null);
+
+  const MAX_VISIBLE_CATEGORIES = 8; // Maximum categories to show as buttons
 
   useEffect(() => {
     // Check authentication status
@@ -209,6 +216,34 @@ export function HomePage() {
       day: "numeric",
     });
   };
+
+  // Flatten all categories (including children) for "More Categories" dropdown
+  const flattenCategories = (
+    categories: CategoryTree[],
+    level: number = 0
+  ): Array<{ id: number; name: string; level: number }> => {
+    let result: Array<{ id: number; name: string; level: number }> = [];
+
+    categories.forEach((category) => {
+      result.push({ id: category.id, name: category.name, level });
+      if (category.children && category.children.length > 0) {
+        result = result.concat(flattenCategories(category.children, level + 1));
+      }
+    });
+
+    return result;
+  };
+
+  const allFlatCategories = flattenCategories(categoryTree);
+
+  // Filter categories for search
+  const filteredMoreCategories = allFlatCategories.filter((category) =>
+    category.name.toLowerCase().includes(categorySearchTerm.toLowerCase())
+  );
+
+  // Split categories into visible (as buttons) and hidden (in dropdown)
+  const visibleCategories = categoryTree.slice(0, MAX_VISIBLE_CATEGORIES);
+  const hasMoreCategories = categoryTree.length > MAX_VISIBLE_CATEGORIES;
 
   if (selectedNews) {
     return (
@@ -431,7 +466,7 @@ export function HomePage() {
               All Categories
             </button>
 
-            {categoryTree.map((tree) => {
+            {visibleCategories.map((tree) => {
               const hasChildren = tree.children.length > 0;
               const isParentSelected = selectedCategory === tree.id;
               const isChildSelected = tree.children.some(
@@ -479,6 +514,81 @@ export function HomePage() {
                 </div>
               );
             })}
+
+            {/* More Categories Dropdown */}
+            {hasMoreCategories && (
+              <div className="relative" ref={moreCategoriesRef}>
+                <button
+                  onClick={() => setShowMoreCategories(!showMoreCategories)}
+                  className={`px-4 py-2 rounded-full font-medium transition flex items-center space-x-1 ${
+                    showMoreCategories
+                      ? "bg-orange-600 text-white"
+                      : "bg-white text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span>More ({categoryTree.length - MAX_VISIBLE_CATEGORIES})</span>
+                </button>
+
+                {showMoreCategories && (
+                  <div className="absolute top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 w-80 z-20">
+                    {/* Search Box */}
+                    <div className="p-2 border-b border-gray-200 space-y-2">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <input
+                          type="text"
+                          value={categorySearchTerm}
+                          onChange={(e) => setCategorySearchTerm(e.target.value)}
+                          placeholder="Search categories..."
+                          className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                          autoFocus
+                        />
+                      </div>
+                      {categorySearchTerm && (
+                        <div className="text-xs text-gray-500 px-1">
+                          Found {filteredMoreCategories.length}{" "}
+                          {filteredMoreCategories.length === 1 ? "category" : "categories"}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Categories List */}
+                    <div className="max-h-80 overflow-y-auto py-1">
+                      {filteredMoreCategories.length > 0 ? (
+                        filteredMoreCategories.map((category) => (
+                          <button
+                            key={category.id}
+                            onClick={() => handleCategoryChange(category.id)}
+                            className={`w-full text-left px-4 py-2 hover:bg-orange-50 transition ${
+                              selectedCategory === category.id
+                                ? "bg-orange-100 text-orange-700 font-semibold"
+                                : "text-gray-700"
+                            }`}
+                          >
+                            <span>
+                              {"—".repeat(category.level)} {category.name}
+                            </span>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="px-4 py-8 text-center">
+                          <div className="text-gray-400 mb-2">
+                            <Search className="h-8 w-8 mx-auto" />
+                          </div>
+                          <p className="text-sm text-gray-500 font-medium">
+                            No categories found
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            Try a different search term
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Show selected category name if subcategory is selected */}
