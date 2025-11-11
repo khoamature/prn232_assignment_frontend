@@ -11,6 +11,7 @@ import accountService, { Account } from "../service/accountService";
 import toast from "react-hot-toast";
 import { EditAccountModal } from "./EditAccountModal";
 import DeleteAccountModal from "./DeleteAccountModal";
+import { CreateAccountModal } from "./CreateAccountModal";
 
 interface UserManagementProps {
   onClose?: () => void;
@@ -35,6 +36,7 @@ export function UserManagement({ onClose }: UserManagementProps) {
   );
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedAccountName, setSelectedAccountName] = useState("");
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     loadAccounts();
@@ -121,6 +123,19 @@ export function UserManagement({ onClose }: UserManagementProps) {
     handleCloseDeleteModal();
   };
 
+  const handleCreateAccount = () => {
+    setShowCreateModal(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setShowCreateModal(false);
+  };
+
+  const handleAccountCreated = () => {
+    loadAccounts(); // Reload the accounts list
+    handleCloseCreateModal();
+  };
+
   const getRoleBadge = (role: number) => {
     switch (role) {
       case 0:
@@ -156,7 +171,10 @@ export function UserManagement({ onClose }: UserManagementProps) {
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
-          <button className="bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-700 transition flex items-center space-x-2">
+          <button
+            onClick={handleCreateAccount}
+            className="bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-700 transition flex items-center space-x-2"
+          >
             <Plus className="h-5 w-5" />
             <span>Add User</span>
           </button>
@@ -356,6 +374,13 @@ export function UserManagement({ onClose }: UserManagementProps) {
           accountName={selectedAccountName}
         />
       )}
+
+      {/* Create Account Modal */}
+      <CreateAccountModal
+        isOpen={showCreateModal}
+        onClose={handleCloseCreateModal}
+        onSuccess={handleAccountCreated}
+      />
     </div>
   );
 }

@@ -72,6 +72,13 @@ export interface UpdateAccountAdminRequest {
   accountRole: string; // "Admin" | "Staff" | "Lecturer"
 }
 
+export interface CreateAccountRequest {
+  accountName: string;
+  accountEmail: string;
+  password: string;
+  accountRole: string; // "Admin" | "Staff" | "Lecturer"
+}
+
 class AccountService {
   async getAccounts(params?: AccountParams): Promise<AccountListResponse> {
     const response = await axiosInstance.get<AccountListResponse>("/Accounts", {
@@ -97,6 +104,11 @@ class AccountService {
 
   async deleteAccount(id: number): Promise<any> {
     const response = await axiosInstance.delete(`/Accounts/${id}`);
+    return response.data;
+  }
+
+  async createAccount(data: CreateAccountRequest): Promise<any> {
+    const response = await axiosInstance.post("/Accounts", data);
     return response.data;
   }
 
