@@ -1,20 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Users,
-  BarChart3,
-  Calendar,
-  TrendingUp,
-  FileText,
-  House,
-} from "lucide-react";
+import { Users, BarChart3, Calendar, House } from "lucide-react";
 import authService from "../service/authService";
 import FPTLogo from "../assets/LOGO.png";
 import { UserDropdown } from "../components/UserDropdown";
+import { UserManagement } from "../components/UserManagement";
+
+type ActiveSection = "users" | "reports";
 
 export function AdminDashboard() {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(authService.getUserInfo());
+  const [activeSection, setActiveSection] = useState<ActiveSection>("users");
 
   useEffect(() => {
     // Check authentication and role
@@ -71,77 +68,57 @@ export function AdminDashboard() {
           Admin Dashboard
         </h1>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-500 text-sm">Total Users</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">0</p>
-              </div>
-              <Users className="h-12 w-12 text-orange-600" />
-            </div>
-          </div>
+        {/* Navigation Tabs */}
+        <div className="mb-6">
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex space-x-8">
+              <button
+                onClick={() => setActiveSection("users")}
+                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition ${
+                  activeSection === "users"
+                    ? "border-orange-600 text-orange-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
+                <Users className="h-5 w-5" />
+                <span>User Management</span>
+              </button>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-500 text-sm">Total Articles</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">0</p>
-              </div>
-              <FileText className="h-12 w-12 text-blue-600" />
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-500 text-sm">This Month</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">0</p>
-              </div>
-              <TrendingUp className="h-12 w-12 text-green-600" />
-            </div>
+              <button
+                onClick={() => setActiveSection("reports")}
+                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition ${
+                  activeSection === "reports"
+                    ? "border-orange-600 text-orange-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
+                <BarChart3 className="h-5 w-5" />
+                <span>Reports & Statistics</span>
+              </button>
+            </nav>
           </div>
         </div>
 
-        {/* Main Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* User Management */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center space-x-3 mb-4">
-              <Users className="h-6 w-6 text-orange-600" />
-              <h2 className="text-xl font-bold text-gray-900">
-                User Management
-              </h2>
-            </div>
-            <p className="text-gray-600 mb-4">
-              Manage user accounts information (CRUD operations)
-            </p>
-            <button className="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition">
-              Manage Users
-            </button>
-          </div>
+        {/* Content Sections */}
+        {activeSection === "users" && <UserManagement />}
 
-          {/* Reports & Statistics */}
+        {activeSection === "reports" && (
           <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center space-x-3 mb-4">
-              <BarChart3 className="h-6 w-6 text-blue-600" />
-              <h2 className="text-xl font-bold text-gray-900">
-                Reports & Statistics
-              </h2>
-            </div>
-            <p className="text-gray-600 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Reports & Statistics
+            </h2>
+            <p className="text-gray-600 mb-6">
               View dashboard reports by date range (news created date)
             </p>
 
             {/* Date Range Selector */}
-            <div className="space-y-3">
+            <div className="max-w-md space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Start Date
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
                   <input
                     type="date"
                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
@@ -149,23 +126,26 @@ export function AdminDashboard() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   End Date
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
                   <input
                     type="date"
                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   />
                 </div>
               </div>
-              <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
-                Generate Report
+              <button className="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition flex items-center justify-center space-x-2">
+                <BarChart3 className="h-5 w-5" />
+                <span>Generate Report</span>
               </button>
             </div>
+
+            {/* Report content will go here */}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

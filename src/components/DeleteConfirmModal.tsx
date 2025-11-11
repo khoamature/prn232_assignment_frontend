@@ -6,6 +6,7 @@ interface DeleteConfirmModalProps {
   onConfirm: () => void;
   title: string;
   message: string;
+  warningMessage?: string;
   loading?: boolean;
 }
 
@@ -15,6 +16,7 @@ export function DeleteConfirmModal({
   onConfirm,
   title,
   message,
+  warningMessage,
   loading = false,
 }: DeleteConfirmModalProps) {
   if (!isOpen) return null;
@@ -25,7 +27,7 @@ export function DeleteConfirmModal({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 p-2 bg-red-100 rounded-lg">
               <AlertTriangle className="h-6 w-6 text-red-600" />
             </div>
             <h2 className="text-xl font-bold text-gray-900">{title}</h2>
@@ -40,8 +42,16 @@ export function DeleteConfirmModal({
         </div>
 
         {/* Content */}
-        <div className="p-6">
-          <p className="text-gray-600">{message}</p>
+        <div className="p-6 space-y-4">
+          <p className="text-gray-700">{message}</p>
+
+          {warningMessage && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-sm text-red-800">
+                <span className="font-semibold">Warning:</span> {warningMessage}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Buttons */}

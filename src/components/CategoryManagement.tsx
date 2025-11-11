@@ -178,14 +178,7 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
         });
       } else {
         // Show success toast for deletion
-        toast.success("Category deleted successfully", {
-          icon: null,
-          style: {
-            background: "oklch(72.3% 0.219 149.579)",
-            color: "#fff",
-            fontWeight: "600",
-          },
-        });
+        toast.success("Category deleted successfully");
       }
 
       loadCategories(); // Reload the categories list
@@ -197,14 +190,7 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
       const errorMessage =
         error.response?.data?.message || "Failed to delete category";
 
-      toast.error(errorMessage, {
-        icon: null,
-        style: {
-          background: "#ef4444",
-          color: "#fff",
-          fontWeight: "600",
-        },
-      });
+      toast.error(errorMessage);
     } finally {
       setDeleting(false);
     }
@@ -227,14 +213,7 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
       setUnlocking(true);
       await categoryService.unlockCategory(categoryToUnlock.id);
 
-      toast.success("Category activated successfully", {
-        icon: null,
-        style: {
-          background: "oklch(72.3% 0.219 149.579)",
-          color: "#fff",
-          fontWeight: "600",
-        },
-      });
+      toast.success("Category activated successfully");
 
       loadCategories(); // Reload the categories list
       handleCloseUnlockModal();
@@ -244,14 +223,7 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
       const errorMessage =
         error.response?.data?.message || "Failed to unlock category";
 
-      toast.error(errorMessage, {
-        icon: null,
-        style: {
-          background: "#ef4444",
-          color: "#fff",
-          fontWeight: "600",
-        },
-      });
+      toast.error(errorMessage);
     } finally {
       setUnlocking(false);
     }
@@ -516,9 +488,10 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
         title="Delete Category"
         message={
           categoryToDelete
-            ? `Are you sure you want to delete "${categoryToDelete.name}"? This action cannot be undone.`
+            ? `Are you sure you want to delete "${categoryToDelete.name}"?`
             : ""
         }
+        warningMessage="This action cannot be undone."
         loading={deleting}
       />
 
