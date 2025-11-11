@@ -6,8 +6,9 @@ import FPTLogo from "../assets/LOGO.png";
 import { UserDropdown } from "../components/UserDropdown";
 import { CategoryManagement } from "../components/CategoryManagement";
 import { NewsManagement } from "../components/NewsManagement";
+import { MyNewsManagement } from "../components/MyNewsManagement";
 
-type ActiveSection = "categories" | "articles" | "myArticles";
+type ActiveSection = "categories" | "news" | "myNews";
 
 export function StaffDashboard() {
   const navigate = useNavigate();
@@ -87,9 +88,9 @@ export function StaffDashboard() {
               </button>
 
               <button
-                onClick={() => setActiveSection("articles")}
+                onClick={() => setActiveSection("news")}
                 className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition ${
-                  activeSection === "articles"
+                  activeSection === "news"
                     ? "border-orange-600 text-orange-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
@@ -99,15 +100,15 @@ export function StaffDashboard() {
               </button>
 
               <button
-                onClick={() => setActiveSection("myArticles")}
+                onClick={() => setActiveSection("myNews")}
                 className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition ${
-                  activeSection === "myArticles"
+                  activeSection === "myNews"
                     ? "border-orange-600 text-orange-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
                 <History className="h-5 w-5" />
-                <span>My Articles</span>
+                <span>My news</span>
               </button>
             </nav>
           </div>
@@ -116,18 +117,9 @@ export function StaffDashboard() {
         {/* Content Sections */}
         {activeSection === "categories" && <CategoryManagement />}
 
-        {activeSection === "articles" && <NewsManagement />}
+        {activeSection === "news" && <NewsManagement />}
 
-        {activeSection === "myArticles" && (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              My Articles
-            </h2>
-            <p className="text-gray-600">
-              This section will show your article history.
-            </p>
-          </div>
-        )}
+        {activeSection === "myNews" && <MyNewsManagement />}
       </div>
     </div>
   );

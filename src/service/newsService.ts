@@ -106,6 +106,14 @@ class NewsService {
     return response.data;
   }
 
+  // Lấy danh sách my news articles với pagination
+  async getMyNewsArticles(params: NewsParams = {}) {
+    const response = await axiosInstance.get<
+      ApiResponse<PaginationData<NewsArticleItem>>
+    >("/NewsArticles/my-news", { params });
+    return response.data;
+  }
+
   // Lấy chi tiết một news article
   async getNewsArticleById(id: number) {
     const response = await axiosInstance.get<ApiResponse<NewsArticleDetail>>(
