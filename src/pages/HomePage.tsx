@@ -115,6 +115,7 @@ export function HomePage() {
       setLoading(true);
 
       const params: any = {
+        NewsStatus: "Active",
         PageNumber: pageNumber,
         PageSize: 6,
       };

@@ -14,6 +14,9 @@ import categoryService, {
   CategoryDropdownItem,
 } from "../service/categoryService";
 import toast from "react-hot-toast";
+import { CreateNewsModal } from "./CreateNewsModal";
+import EditNewsModal from "./EditNewsModal";
+import { DeleteConfirmModal } from "./DeleteConfirmModal";
 
 interface MyNewsManagementProps {
   onClose?: () => void;
@@ -45,6 +48,19 @@ export function MyNewsManagement({ onClose }: MyNewsManagementProps) {
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [categorySearchTerm, setCategorySearchTerm] = useState("");
   const categoryDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Create modal
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  // Edit modal
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingNewsId, setEditingNewsId] = useState<number | null>(null);
+
+  // Delete modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingNewsId, setDeletingNewsId] = useState<number | null>(null);
+  const [deletingNewsTitle, setDeletingNewsTitle] = useState<string>("");
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     loadNews();
@@ -231,13 +247,43 @@ export function MyNewsManagement({ onClose }: MyNewsManagementProps) {
     });
   };
 
+  const handleDeleteClick = (newsId: number, newsTitle: string) => {
+    setDeletingNewsId(newsId);
+    setDeletingNewsTitle(newsTitle);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingNewsId) return;
+
+    try {
+      setDeleting(true);
+      await newsService.deleteNewsArticle(deletingNewsId);
+      toast.success("News article deleted successfully!");
+      setShowDeleteModal(false);
+      setDeletingNewsId(null);
+      setDeletingNewsTitle("");
+      loadNews();
+    } catch (error: any) {
+      console.error("Error deleting news article:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to delete news article"
+      );
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-gray-900">My News Articles</h2>
-          <button className="bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-700 transition flex items-center space-x-2">
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-700 transition flex items-center space-x-2"
+          >
             <Plus className="h-5 w-5" />
             <span>New Article</span>
           </button>
@@ -411,25 +457,22 @@ export function MyNewsManagement({ onClose }: MyNewsManagementProps) {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
                   ID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Title
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Article Info
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Headline
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                   Category
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created Date
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
+                  Created
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                   Actions
                 </th>
               </tr>
@@ -437,42 +480,68 @@ export function MyNewsManagement({ onClose }: MyNewsManagementProps) {
             <tbody className="bg-white divide-y divide-gray-200">
               {news.map((article) => (
                 <tr key={article.newsArticleId} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 font-medium">
                     {article.newsArticleId}
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
-                      {article.newsTitle}
+                  <td className="px-4 py-3">
+                    <div className="max-w-md">
+                      <div className="text-sm font-medium text-gray-900 truncate">
+                        {article.newsTitle}
+                      </div>
+                      <div className="text-xs text-gray-500 truncate mt-1">
+                        {article.headline}
+                      </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm text-gray-600 max-w-xs truncate">
-                      {article.headline}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-600">
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="text-sm text-gray-600 truncate">
                       {article.categoryName || "N/A"}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-600">
-                      {formatDate(article.createdDate)}
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="text-xs text-gray-600">
+                      {new Date(article.createdDate).toLocaleDateString(
+                        "en-GB",
+                        {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        }
+                      )}
+                      <div className="text-gray-500">
+                        {new Date(article.createdDate).toLocaleTimeString(
+                          "en-GB",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )}
+                      </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-4 py-3 whitespace-nowrap">
                     {getStatusBadge(article.newsStatus)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <div className="flex items-center space-x-2">
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="flex items-center justify-center space-x-1">
                       <button
-                        className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50 transition"
+                        onClick={() => {
+                          setEditingNewsId(article.newsArticleId);
+                          setShowEditModal(true);
+                        }}
+                        className="text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-50 transition"
                         title="Edit article"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
-                        className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50 transition"
+                        onClick={() =>
+                          handleDeleteClick(
+                            article.newsArticleId,
+                            article.newsTitle
+                          )
+                        }
+                        className="text-red-600 hover:text-red-800 p-1.5 rounded hover:bg-red-50 transition"
                         title="Delete article"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -538,6 +607,48 @@ export function MyNewsManagement({ onClose }: MyNewsManagementProps) {
           </div>
         </div>
       )}
+
+      {/* Create News Modal */}
+      <CreateNewsModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSuccess={() => {
+          loadNews();
+          setShowCreateModal(false);
+        }}
+      />
+
+      {/* Edit News Modal */}
+      {editingNewsId && (
+        <EditNewsModal
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingNewsId(null);
+          }}
+          onSuccess={() => {
+            loadNews();
+            setShowEditModal(false);
+            setEditingNewsId(null);
+          }}
+          newsId={editingNewsId}
+        />
+      )}
+
+      {/* Delete Confirm Modal */}
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setDeletingNewsId(null);
+          setDeletingNewsTitle("");
+        }}
+        onConfirm={handleDeleteConfirm}
+        title="Delete News Article"
+        message={`Are you sure you want to delete "${deletingNewsTitle}"?`}
+        warningMessage="This action cannot be undone. The article will be permanently deleted from the system."
+        loading={deleting}
+      />
     </div>
   );
 }

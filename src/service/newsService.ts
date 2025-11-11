@@ -85,7 +85,7 @@ export interface NewsParams {
   Headline?: string;
   NewsSource?: string;
   CategoryId?: number;
-  NewsStatus?: number;
+  NewsStatus?: string;
   CreatedDateFrom?: string;
   CreatedDateTo?: string;
   TagIds?: number[];
@@ -94,6 +94,25 @@ export interface NewsParams {
   SortBy?: string;
   SortOrder?: string;
   IsDescending?: boolean;
+}
+
+export interface CreateNewsArticleRequest {
+  newsTitle: string;
+  headline: string;
+  newsContent: string;
+  newsSource: string;
+  categoryId: number;
+  tagIds: number[];
+}
+
+export interface UpdateNewsArticleRequest {
+  newsTitle: string;
+  headline: string;
+  newsContent: string;
+  newsSource: string;
+  categoryId: number;
+  newsStatus: string; // "Inactive" or "Active"
+  tagIds: number[];
 }
 
 // News Service - Tất cả các API calls liên quan đến News
@@ -117,6 +136,32 @@ class NewsService {
   // Lấy chi tiết một news article
   async getNewsArticleById(id: number) {
     const response = await axiosInstance.get<ApiResponse<NewsArticleDetail>>(
+      `/NewsArticles/${id}`
+    );
+    return response.data;
+  }
+
+  // Tạo news article mới
+  async createNewsArticle(data: CreateNewsArticleRequest) {
+    const response = await axiosInstance.post<ApiResponse<any>>(
+      "/NewsArticles",
+      data
+    );
+    return response.data;
+  }
+
+  // Cập nhật news article
+  async updateNewsArticle(id: number, data: UpdateNewsArticleRequest) {
+    const response = await axiosInstance.put<ApiResponse<any>>(
+      `/NewsArticles/${id}`,
+      data
+    );
+    return response.data;
+  }
+
+  // Xóa news article
+  async deleteNewsArticle(id: number) {
+    const response = await axiosInstance.delete<ApiResponse<any>>(
       `/NewsArticles/${id}`
     );
     return response.data;
