@@ -7,12 +7,14 @@ import {
   Edit,
   Trash2,
   AlertTriangle,
+  Unlock,
 } from "lucide-react";
 import categoryService, { Category } from "../service/categoryService";
 import toast from "react-hot-toast";
 import { CreateCategoryModal } from "./CreateCategoryModal";
 import { EditCategoryModal } from "./EditCategoryModal";
 import { DeleteConfirmModal } from "./DeleteConfirmModal";
+import { UnlockConfirmModal } from "./UnlockConfirmModal";
 
 interface CategoryManagementProps {
   onClose?: () => void;
@@ -34,6 +36,7 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
@@ -41,7 +44,12 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
     id: number;
     name: string;
   } | null>(null);
+  const [categoryToUnlock, setCategoryToUnlock] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [unlocking, setUnlocking] = useState(false);
 
   useEffect(() => {
     loadCategories();
@@ -151,16 +159,34 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
 
     try {
       setDeleting(true);
-      await categoryService.deleteCategory(categoryToDelete.id);
+      const response = await categoryService.deleteCategory(
+        categoryToDelete.id
+      );
 
-      toast.success("Category deleted successfully", {
-        icon: null,
-        style: {
-          background: "oklch(72.3% 0.219 149.579)",
-          color: "#fff",
-          fontWeight: "600",
-        },
-      });
+      // Check the message from response
+      const message = response?.message || "";
+
+      if (message === "Category deactivated because it has related data") {
+        // Show warning toast for deactivation
+        toast(message, {
+          icon: "⚠️",
+          style: {
+            background: "#f59e0b", // Orange/amber color for warning
+            color: "#fff",
+            fontWeight: "600",
+          },
+        });
+      } else {
+        // Show success toast for deletion
+        toast.success("Category deleted successfully", {
+          icon: null,
+          style: {
+            background: "oklch(72.3% 0.219 149.579)",
+            color: "#fff",
+            fontWeight: "600",
+          },
+        });
+      }
 
       loadCategories(); // Reload the categories list
       handleCloseDeleteModal();
@@ -181,6 +207,53 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
       });
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleUnlockClick = (categoryId: number, categoryName: string) => {
+    setCategoryToUnlock({ id: categoryId, name: categoryName });
+    setShowUnlockModal(true);
+  };
+
+  const handleCloseUnlockModal = () => {
+    setShowUnlockModal(false);
+    setCategoryToUnlock(null);
+  };
+
+  const handleConfirmUnlock = async () => {
+    if (!categoryToUnlock) return;
+
+    try {
+      setUnlocking(true);
+      await categoryService.unlockCategory(categoryToUnlock.id);
+
+      toast.success("Category activated successfully", {
+        icon: null,
+        style: {
+          background: "oklch(72.3% 0.219 149.579)",
+          color: "#fff",
+          fontWeight: "600",
+        },
+      });
+
+      loadCategories(); // Reload the categories list
+      handleCloseUnlockModal();
+    } catch (error: any) {
+      console.error("Error unlocking category:", error);
+
+      const errorMessage =
+        error.response?.data?.message || "Failed to unlock category";
+
+      toast.error(errorMessage, {
+        icon: null,
+        style: {
+          background: "#ef4444",
+          color: "#fff",
+          fontWeight: "600",
+        },
+      });
+    } finally {
+      setUnlocking(false);
     }
   };
 
@@ -275,21 +348,40 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {categories.map((category) => (
-                <tr key={category.categoryId} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <tr
+                  key={category.categoryId}
+                  className="hover:bg-gray-50 transition"
+                >
+                  <td
+                    className={`px-6 py-4 whitespace-nowrap text-sm text-gray-900 ${
+                      !category.isActive ? "opacity-50 blur-[0.5px]" : ""
+                    }`}
+                  >
                     {category.categoryId}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td
+                    className={`px-6 py-4 whitespace-nowrap ${
+                      !category.isActive ? "opacity-50 blur-[0.5px]" : ""
+                    }`}
+                  >
                     <div className="text-sm font-medium text-gray-900">
                       {category.categoryName}
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td
+                    className={`px-6 py-4 ${
+                      !category.isActive ? "opacity-50 blur-[0.5px]" : ""
+                    }`}
+                  >
                     <div className="text-sm text-gray-600 max-w-xs truncate">
                       {category.categoryDescription}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td
+                    className={`px-6 py-4 whitespace-nowrap ${
+                      !category.isActive ? "opacity-50 blur-[0.5px]" : ""
+                    }`}
+                  >
                     {category.parent ? (
                       <div className="text-sm text-gray-600">
                         {category.parent.parentCategoryName}
@@ -298,7 +390,7 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
                       <span className="text-sm text-gray-400">Root</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className={`px-6 py-4 whitespace-nowrap`}>
                     {getStatusBadge(category.isActive)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -310,18 +402,33 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
                       >
                         <Edit className="h-4 w-4" />
                       </button>
-                      <button
-                        onClick={() =>
-                          handleDeleteClick(
-                            category.categoryId,
-                            category.categoryName
-                          )
-                        }
-                        className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50 transition"
-                        title="Delete category"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {category.isActive ? (
+                        <button
+                          onClick={() =>
+                            handleDeleteClick(
+                              category.categoryId,
+                              category.categoryName
+                            )
+                          }
+                          className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50 transition"
+                          title="Delete category"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() =>
+                            handleUnlockClick(
+                              category.categoryId,
+                              category.categoryName
+                            )
+                          }
+                          className="text-green-600 hover:text-green-800 p-1 rounded hover:bg-green-50 transition"
+                          title="Unlock and activate category"
+                        >
+                          <Unlock className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -413,6 +520,15 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
             : ""
         }
         loading={deleting}
+      />
+
+      {/* Unlock Confirm Modal */}
+      <UnlockConfirmModal
+        isOpen={showUnlockModal}
+        onClose={handleCloseUnlockModal}
+        onConfirm={handleConfirmUnlock}
+        categoryName={categoryToUnlock?.name || ""}
+        loading={unlocking}
       />
     </div>
   );

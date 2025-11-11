@@ -26,7 +26,7 @@ export function NewsManagement({ onClose }: NewsManagementProps) {
 
   // Filters
   const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
-  const [newsStatus, setNewsStatus] = useState<number | undefined>(undefined);
+  const [newsStatus, setNewsStatus] = useState<string | undefined>(undefined);
   const [createdDateFrom, setCreatedDateFrom] = useState("");
   const [createdDateTo, setCreatedDateTo] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -350,18 +350,17 @@ export function NewsManagement({ onClose }: NewsManagementProps) {
             {/* Status Filter */}
             <div>
               <select
-                value={newsStatus === undefined ? "" : newsStatus.toString()}
+                value={newsStatus === undefined ? "" : newsStatus}
                 onChange={(e) =>
                   setNewsStatus(
-                    e.target.value === "" ? undefined : Number(e.target.value)
+                    e.target.value === "" ? undefined : e.target.value
                   )
                 }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               >
                 <option value="">All Status</option>
-                <option value="0">Draft</option>
-                <option value="1">Published</option>
-                <option value="2">Rejected</option>
+                <option value="Active">Published</option>
+                <option value="Inactive">Draft</option>
               </select>
             </div>
 

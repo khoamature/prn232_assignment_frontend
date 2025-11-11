@@ -34,13 +34,19 @@ axiosInstance.interceptors.response.use(
       switch (error.response.status) {
         case 401:
           // Unauthorized
-          // Nếu đang ở trang login, để component xử lý lỗi
-          const isLoginPage = window.location.pathname === "/login";
-          if (!isLoginPage) {
+          const currentPath = window.location.pathname;
+          const publicPaths = ["/", "/login"];
+
+          // Chỉ redirect nếu KHÔNG phải trang public (homepage hoặc login)
+          const isPublicPage = publicPaths.includes(currentPath);
+
+          if (!isPublicPage) {
+            // Chỉ xóa token và redirect khi ở trang protected
             localStorage.removeItem("auth_token");
             localStorage.removeItem("user_info");
             window.location.href = "/login";
           }
+          // Nếu là trang public, để component tự xử lý lỗi
           break;
         case 403:
           console.error("Forbidden - Bạn không có quyền truy cập");

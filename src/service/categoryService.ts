@@ -54,7 +54,7 @@ export interface CreateCategoryRequest {
   categoryName: string;
   categoryDescription: string;
   parentCategoryId?: number;
-  isActive: boolean;
+  isActive?: boolean;
 }
 
 class CategoryService {
@@ -101,6 +101,13 @@ class CategoryService {
 
   async deleteCategory(id: number): Promise<any> {
     const response = await axiosInstance.delete(`/Categories/${id}`);
+    return response.data;
+  }
+
+  async unlockCategory(id: number): Promise<any> {
+    const response = await axiosInstance.put(`/Categories/${id}`, {
+      isActive: true,
+    });
     return response.data;
   }
 }

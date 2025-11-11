@@ -535,7 +535,7 @@ export function HomePage() {
                           <Calendar className="h-4 w-4" />
                           <span>{formatDate(item.createdDate)}</span>
                         </div>
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-gray-400 ">
                           By {item.createdByAccountName}
                         </div>
                       </div>

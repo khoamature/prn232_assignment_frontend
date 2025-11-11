@@ -24,7 +24,6 @@ export function EditCategoryModal({
   const [parentCategoryId, setParentCategoryId] = useState<number | undefined>(
     undefined
   );
-  const [isActive, setIsActive] = useState(true);
   const [categories, setCategories] = useState<CategoryDropdownItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(false);
@@ -65,7 +64,6 @@ export function EditCategoryModal({
       if (response.data) {
         setCategoryName(response.data.categoryName);
         setCategoryDescription(response.data.categoryDescription);
-        setIsActive(response.data.isActive);
 
         // Set parent category ID if it exists
         if (response.data.parent) {
@@ -152,7 +150,6 @@ export function EditCategoryModal({
       const data: CreateCategoryRequest = {
         categoryName: categoryName.trim(),
         categoryDescription: categoryDescription.trim(),
-        isActive,
       };
 
       // Only include parentCategoryId if it's selected
@@ -343,34 +340,6 @@ export function EditCategoryModal({
               <p className="mt-5 text-sm text-gray-500">
                 Leave as "Root Category" to create a top-level category
               </p>
-            </div>
-
-            {/* Is Active */}
-            <div className="flex items-center justify-between">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Status
-                </label>
-                <p className="text-sm text-gray-500 mt-1">
-                  {isActive
-                    ? "Category will be visible immediately"
-                    : "Category will be hidden from users"}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsActive(!isActive)}
-                disabled={loading}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
-                  isActive ? "bg-orange-600" : "bg-gray-300"
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    isActive ? "translate-x-6" : "translate-x-1"
-                  }`}
-                />
-              </button>
             </div>
 
             {/* Buttons */}
