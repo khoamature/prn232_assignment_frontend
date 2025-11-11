@@ -5,6 +5,7 @@ import authService from "../service/authService";
 import FPTLogo from "../assets/LOGO.png";
 import { UserDropdown } from "../components/UserDropdown";
 import { UserManagement } from "../components/UserManagement";
+import { ReportsManagement } from "../components/ReportsManagement";
 
 type ActiveSection = "users" | "reports";
 
@@ -102,50 +103,7 @@ export function AdminDashboard() {
         {/* Content Sections */}
         {activeSection === "users" && <UserManagement />}
 
-        {activeSection === "reports" && (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Reports & Statistics
-            </h2>
-            <p className="text-gray-600 mb-6">
-              View dashboard reports by date range (news created date)
-            </p>
-
-            {/* Date Range Selector */}
-            <div className="max-w-md space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Start Date
-                </label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
-                  <input
-                    type="date"
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  End Date
-                </label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
-                  <input
-                    type="date"
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  />
-                </div>
-              </div>
-              <button className="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition flex items-center justify-center space-x-2">
-                <BarChart3 className="h-5 w-5" />
-                <span>Generate Report</span>
-              </button>
-            </div>
-
-            {/* Report content will go here */}
-          </div>
-        )}
+        {activeSection === "reports" && <ReportsManagement />}
       </div>
     </div>
   );
