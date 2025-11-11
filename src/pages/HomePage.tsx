@@ -73,12 +73,6 @@ export function HomePage() {
       toast.success("You have been logged out successfully", {
         duration: 2500,
         position: "top-center",
-        icon: null,
-        style: {
-          background: "oklch(57.7% 0.245 27.325)",
-          color: "#fff",
-          fontWeight: "600",
-        },
       });
       localStorage.removeItem("show_logout_toast");
     }
