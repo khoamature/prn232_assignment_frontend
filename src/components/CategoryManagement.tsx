@@ -166,10 +166,9 @@ export function CategoryManagement({ onClose }: CategoryManagementProps) {
       // Check the message from response
       const message = response?.message || "";
 
-      if (message === "Category deactivated because it has related data") {
+      if (message === "Category deactivated because it has child categories") {
         // Show warning toast for deactivation
         toast(message, {
-          icon: "⚠️",
           style: {
             background: "#f59e0b", // Orange/amber color for warning
             color: "#fff",
