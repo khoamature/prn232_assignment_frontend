@@ -58,6 +58,7 @@ export default function EditNewsModal({
   const categoryDropdownRef = useRef<HTMLDivElement>(null);
   const tagDropdownRef = useRef<HTMLDivElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
+  const titleRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -67,6 +68,16 @@ export default function EditNewsModal({
       resetForm();
     }
   }, [isOpen, newsId]);
+
+  // Adjust title textarea height when loaded or when title changes
+  useEffect(() => {
+    const el = titleRef.current;
+    if (el) {
+      // Allow the textarea to grow to fit content (useful when loading an existing long title)
+      el.style.height = "auto";
+      el.style.height = el.scrollHeight + "px";
+    }
+  }, [newsTitle, isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -404,7 +415,7 @@ export default function EditNewsModal({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Category Badge and Status */}
+          {/* Category Badge */}
           <div className="flex items-center justify-between">
             <div className="relative" ref={categoryDropdownRef}>
               <button
@@ -479,36 +490,6 @@ export default function EditNewsModal({
                 </div>
               )}
             </div>
-
-            {/* Status Toggle Switch */}
-            <div className="flex items-center space-x-3">
-              <span className="text-sm font-medium text-gray-700 cursor-default">
-                Status:
-              </span>
-              <button
-                type="button"
-                onClick={() =>
-                  setNewsStatus(newsStatus === "Active" ? "Inactive" : "Active")
-                }
-                disabled={loading}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
-                  newsStatus === "Active" ? "bg-green-600" : "bg-gray-300"
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    newsStatus === "Active" ? "translate-x-6" : "translate-x-1"
-                  }`}
-                />
-              </button>
-              <span
-                className={`text-sm font-medium w-16 cursor-default ${
-                  newsStatus === "Active" ? "text-green-600" : "text-yellow-600"
-                }`}
-              >
-                {newsStatus === "Active" ? "Published" : "Draft"}
-              </span>
-            </div>
           </div>
 
           {/* Date and Author Info */}
@@ -530,6 +511,7 @@ export default function EditNewsModal({
           {/* Title */}
           <div>
             <textarea
+              ref={titleRef}
               value={newsTitle}
               onChange={(e) => setNewsTitle(e.target.value)}
               className="w-full text-3xl font-bold text-gray-900 border-0 focus:ring-0 focus:outline-none px-0 resize-none overflow-hidden"

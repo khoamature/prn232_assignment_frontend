@@ -8,6 +8,7 @@ import {
   Trash2,
   ChevronDown,
   Calendar,
+  RefreshCw,
 } from "lucide-react";
 import newsService, { NewsArticleItem } from "../service/newsService";
 import categoryService, {
@@ -61,6 +62,8 @@ export function MyNewsManagement({ onClose }: MyNewsManagementProps) {
   const [deletingNewsId, setDeletingNewsId] = useState<number | null>(null);
   const [deletingNewsTitle, setDeletingNewsTitle] = useState<string>("");
   const [deleting, setDeleting] = useState(false);
+  // Activating (re-activating) an inactive article
+  const [activatingId, setActivatingId] = useState<number | null>(null);
 
   useEffect(() => {
     loadNews();
@@ -271,6 +274,48 @@ export function MyNewsManagement({ onClose }: MyNewsManagementProps) {
       );
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleActivateClick = async (newsId: number) => {
+    try {
+      setActivatingId(newsId);
+
+      // Fetch full article details so we can submit an update with existing fields
+      const response = await newsService.getNewsArticleById(newsId);
+      if (!response.data) {
+        toast.error("Failed to load news details to activate");
+        return;
+      }
+
+      const detail = response.data as any;
+
+      // Build update payload re-using existing fields and setting status to Active
+      const updatePayload: any = {
+        newsTitle: detail.newsTitle || "",
+        headline: detail.headline || "",
+        newsContent: detail.newsContent || "",
+        newsSource: detail.newsSource || "",
+        categoryId: detail.category?.categoryId || null,
+        newsStatus: "Active",
+        tagIds: detail.tags ? detail.tags.map((t: any) => t.tagId) : [],
+      };
+
+      await newsService.updateNewsArticle(newsId, updatePayload);
+
+      // Optimistically update UI so the article lights up immediately
+      setNews((prev) =>
+        prev.map((a) =>
+          a.newsArticleId === newsId ? { ...a, newsStatus: 1 } : a
+        )
+      );
+
+      toast.success("News article activated successfully!");
+    } catch (error: any) {
+      console.error("Error activating news article:", error);
+      toast.error(error.response?.data?.message || "Failed to activate");
+    } finally {
+      setActivatingId(null);
     }
   };
 
@@ -507,7 +552,13 @@ export function MyNewsManagement({ onClose }: MyNewsManagementProps) {
                     {article.newsArticleId}
                   </td>
                   <td className="px-4 py-3">
-                    <div className="max-w-md">
+                    <div
+                      className={`max-w-md ${
+                        article.newsStatus !== 1
+                          ? "filter blur-[0.5px] opacity-50 transition-all duration-150"
+                          : ""
+                      }`}
+                    >
                       <div className="text-sm font-medium text-gray-900 truncate">
                         {article.newsTitle}
                       </div>
@@ -517,12 +568,24 @@ export function MyNewsManagement({ onClose }: MyNewsManagementProps) {
                     </div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="text-sm text-gray-600 truncate">
+                    <div
+                      className={`text-sm text-gray-600 truncate ${
+                        article.newsStatus !== 1
+                          ? "filter blur-[0.5px] opacity-50 transition-all duration-150"
+                          : ""
+                      }`}
+                    >
                       {article.categoryName || "N/A"}
                     </div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="text-xs text-gray-600">
+                    <div
+                      className={`text-xs text-gray-600 ${
+                        article.newsStatus !== 1
+                          ? "filter blur-[0.5px] opacity-50 transition-all duration-150"
+                          : ""
+                      }`}
+                    >
                       {new Date(article.createdDate).toLocaleDateString(
                         "en-GB",
                         {
@@ -557,18 +620,36 @@ export function MyNewsManagement({ onClose }: MyNewsManagementProps) {
                       >
                         <Edit className="h-4 w-4" />
                       </button>
-                      <button
-                        onClick={() =>
-                          handleDeleteClick(
-                            article.newsArticleId,
-                            article.newsTitle
-                          )
-                        }
-                        className="text-red-600 hover:text-red-800 p-1.5 rounded hover:bg-red-50 transition"
-                        title="Delete article"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+
+                      {article.newsStatus === 1 ? (
+                        <button
+                          onClick={() =>
+                            handleDeleteClick(
+                              article.newsArticleId,
+                              article.newsTitle
+                            )
+                          }
+                          className="text-red-600 hover:text-red-800 p-1.5 rounded hover:bg-red-50 transition"
+                          title="Delete article"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() =>
+                            handleActivateClick(article.newsArticleId)
+                          }
+                          disabled={activatingId === article.newsArticleId}
+                          className="text-green-600 hover:text-green-800 p-1.5 rounded hover:bg-green-50 transition"
+                          title={
+                            activatingId === article.newsArticleId
+                              ? "Activating..."
+                              : "Activate article"
+                          }
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -654,7 +735,7 @@ export function MyNewsManagement({ onClose }: MyNewsManagementProps) {
             setShowEditModal(false);
             setEditingNewsId(null);
           }}
-          newsId={editingNewsId}
+          newsId={editingNewsId as number}
         />
       )}
 
